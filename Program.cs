@@ -41,39 +41,41 @@ public class Program
 
         UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        Console.WriteLine("Creating user...");
-        ApplicationUser user = new()
-        {
-            FirstName = "Mike",
-            LastName = "McDonald",
-            Age = 34,
-            DateOfBirth = new DateTime(1991, 8, 28),
-            UserName = "michaelmcd33@gmail.com",
-            Email = "michaelmcd33@gmail.com"
-        };
-
-        IdentityResult result = await userManager.CreateAsync(user, "Password123!");
-
-        if (result.Succeeded)
-        {
-            Console.WriteLine("User created successfully!");
-        }
-        else
-        {
-            Console.WriteLine("User creation failed");
-            foreach (IdentityError error in result.Errors)
-            {
-                Console.WriteLine($"   - {error.Description}");
-            }
-        }
-
         Console.WriteLine("\nFinding user...");
-        ApplicationUser? foundUser = await userManager.FindByEmailAsync("michaelmcd33@gmail.com");
+        ApplicationUser? foundUser = await userManager.FindByEmailAsync("test.testerson@test.com");
         if (foundUser != null)
         {
             Console.WriteLine($"✓ Found user: {foundUser.Email}");
         }
-        
+        else
+        {
+            Console.WriteLine("Creating user...");
+            foundUser = new()
+            {
+                FirstName = "Test",
+                LastName = "Testerson",
+                Age = 99,
+                DateOfBirth = new DateTime(1, 1, 1),
+                UserName = "test.testerson@test.com",
+                Email = "test.testerson@test.com"
+            };
+
+            IdentityResult result = await userManager.CreateAsync(foundUser, "Password123!");
+
+            if (result.Succeeded)
+            {
+                Console.WriteLine("User created successfully!");
+            }
+            else
+            {
+                Console.WriteLine("User creation failed");
+                foreach (IdentityError error in result.Errors)
+                {
+                    Console.WriteLine($"   - {error.Description}");
+                }
+            }
+        }
+
         Console.WriteLine("\nVerifying password...");
         bool isPasswordValid = await userManager.CheckPasswordAsync(foundUser ?? new ApplicationUser(), "Password123!");
         Console.WriteLine(isPasswordValid ? "✓ Password is valid" : "✗ Password is invalid");
